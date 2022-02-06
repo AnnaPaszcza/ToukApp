@@ -26,11 +26,11 @@ public class ReservationController {
         return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
     }
 
-    @PostMapping("/api/reservation")
-    public ResponseEntity<HttpStatus> addReservation(@RequestBody ReservationRequest reservationRequest) {
-        reservationService.addReservation(reservationRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @PostMapping("/api/reservation")
+//    public ResponseEntity<HttpStatus> addReservation(@RequestBody ReservationRequest reservationRequest) {
+//        reservationService.addReservation(reservationRequest);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
     @GetMapping("/api/reservation/{id}")
     public ResponseEntity<?> getReservation(@PathVariable int id){
@@ -50,7 +50,7 @@ public class ReservationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/api/makeReservation")
+    @PostMapping("/api/reservation")
     public ResponseEntity<Float> makeReservation(@RequestBody MakeReservationRequest makeReservationRequest) {
         Float totalPrice = reservationService.makeReservation(makeReservationRequest);
         return new ResponseEntity<>(totalPrice, HttpStatus.OK);
