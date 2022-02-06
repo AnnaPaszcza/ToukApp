@@ -2,15 +2,19 @@ package com.example.toukapp.services;
 
 import com.example.toukapp.dtos.ReservationRequest;
 import com.example.toukapp.dtos.ReservationResponse;
+import com.example.toukapp.dtos.ReservationResponse;
 import com.example.toukapp.entity.Reservation;
 import com.example.toukapp.repositories.ReservationRepository;
 import com.example.toukapp.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class ReservationServiceImplementation implements ReservationService{
     private final ReservationRepository reservationRepository;
 
@@ -29,8 +33,9 @@ public class ReservationServiceImplementation implements ReservationService{
     @Override
     public ReservationResponse getReservation(int reservationId){
         List<ReservationResponse> list = getAll();
-        if(reservationRepository.existsById(reservationId)){
-            return list.stream().filter(reservation -> reservation.getReservationId() == reservationId).findAny().get();
+        if(reservationRepository.existsById(reservationId)) {
+            Optional<ReservationResponse> foundReservation = list.stream().filter(reservation -> reservation.getReservationId() == reservationId).findAny();
+            return foundReservation.orElse(null);
         }
         return null;
     }

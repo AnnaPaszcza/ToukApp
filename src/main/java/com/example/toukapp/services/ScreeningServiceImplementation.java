@@ -2,18 +2,22 @@ package com.example.toukapp.services;
 
 import com.example.toukapp.dtos.ScreeningRequest;
 import com.example.toukapp.dtos.ScreeningResponse;
+import com.example.toukapp.dtos.TicketTypeResponse;
 import com.example.toukapp.services.SeatService;
 import com.example.toukapp.entity.Screening;
 import com.example.toukapp.repositories.ScreeningRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class ScreeningServiceImplementation implements ScreeningService{
     private final ScreeningRepository screeningRepository;
 
@@ -32,10 +36,9 @@ public class ScreeningServiceImplementation implements ScreeningService{
     @Override
     public ScreeningResponse getScreening(int screeningId){
         List<ScreeningResponse> list = getAll();
-        if(screeningRepository.existsById(screeningId)){
-            return list.stream().filter(screening -> screening.getScreeningId() == screeningId)
-                    .findAny()
-                    .get();
+        if(screeningRepository.existsById(screeningId)) {
+            Optional<ScreeningResponse> foundScreening = list.stream().filter(screening -> screening.getScreeningId() == screeningId).findAny();
+            return foundScreening.orElse(null);
         }
         return null;
     }
@@ -70,13 +73,14 @@ public class ScreeningServiceImplementation implements ScreeningService{
     }
 
     public List<ScreeningResponse> getByDayTime(Date chosenDate, Time chosenTime){
-        List<ScreeningResponse> screeningResponses = StreamSupport.stream(screeningRepository.findAll().spliterator(), false)
+//        List<ScreeningResponse> screeningResponses =
+        return StreamSupport.stream(screeningRepository.findAll().spliterator(), false)
                 .filter(screeningEntity -> screeningEntity.getDate().equals(chosenDate))
                 .filter(screeningEntity -> (screeningEntity.getTime().equals(chosenTime)) || (screeningEntity.getTime().after(chosenTime)))
                 .sorted(Comparator.comparing(screeningEntity -> screeningEntity.getMovie().getTitle()))
                 .sorted(Comparator.comparing(Screening::getTime))
                 .map(screeningEntity -> new ScreeningResponse(screeningEntity.getScreeningId(), screeningEntity.getDate(), screeningEntity.getTime(), screeningEntity.getRoom(), screeningEntity.getMovie()))
                 .collect(Collectors.toList());
-        return screeningResponses;
+//        return screeningResponses;
     }
 }

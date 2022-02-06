@@ -1,18 +1,21 @@
 package com.example.toukapp.services;
 
-import com.example.toukapp.dtos.ScreeningResponse;
+import com.example.toukapp.dtos.SeatResponse;
 import com.example.toukapp.dtos.SeatRequest;
 import com.example.toukapp.dtos.SeatResponse;
-import com.example.toukapp.entity.Screening;
+import com.example.toukapp.entity.Seat;
 import com.example.toukapp.entity.Seat;
 import com.example.toukapp.repositories.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class SeatServiceImplementation implements SeatService{
     private final SeatRepository seatRepository;
 
@@ -32,8 +35,9 @@ public class SeatServiceImplementation implements SeatService{
     @Override
     public SeatResponse getSeat(int seatId){
         List<SeatResponse> list = getAll();
-        if(seatRepository.existsById(seatId)){
-            return list.stream().filter(seat -> seat.getSeatId() == seatId).findAny().get();
+        if(seatRepository.existsById(seatId)) {
+            Optional<SeatResponse> foundSeat = list.stream().filter(seat -> seat.getSeatId() == seatId).findAny();
+            return foundSeat.orElse(null);
         }
         return null;
     }

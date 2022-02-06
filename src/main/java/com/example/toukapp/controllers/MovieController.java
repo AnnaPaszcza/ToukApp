@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -26,28 +25,25 @@ public class MovieController {
     }
 
     @PostMapping("/api/movie")
-    public ResponseEntity addMovie(@RequestBody MovieRequest movieRequest) {
+    public ResponseEntity<HttpStatus> addMovie(@RequestBody MovieRequest movieRequest) {
         movieService.addMovie(movieRequest);
-
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/api/movie/{id}")
-    public ResponseEntity getMovie(@PathVariable int id){
-        movieService.getMovie(id);
-
-        return new ResponseEntity(movieService.getMovie(id), HttpStatus.OK);
+    public ResponseEntity<?> getMovie(@PathVariable int id){
+        return new ResponseEntity<>(movieService.getMovie(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/movie/{id}")
-    public ResponseEntity deleteMovie(@PathVariable int id){
+    public ResponseEntity<HttpStatus> deleteMovie(@PathVariable int id){
         movieService.deleteMovie(id);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/movie/{id}")
-    public ResponseEntity updateMovie(@PathVariable int id, @RequestBody MovieRequest movieRequest){
+    public ResponseEntity<HttpStatus> updateMovie(@PathVariable int id, @RequestBody MovieRequest movieRequest){
         movieService.updateMovie(id, movieRequest);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

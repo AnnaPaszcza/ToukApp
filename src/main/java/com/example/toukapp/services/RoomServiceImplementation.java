@@ -2,14 +2,18 @@ package com.example.toukapp.services;
 
 import com.example.toukapp.dtos.RoomRequest;
 import com.example.toukapp.dtos.RoomResponse;
+import com.example.toukapp.dtos.TicketTypeResponse;
 import com.example.toukapp.entity.Room;
 import com.example.toukapp.repositories.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class RoomServiceImplementation implements RoomService{
     private final RoomRepository roomRepository;
 
@@ -28,10 +32,8 @@ public class RoomServiceImplementation implements RoomService{
     @Override
     public RoomResponse getRoom(int roomId){
         List<RoomResponse> list = getAll();
-        if(roomRepository.existsById(roomId)){
-            return list.stream().filter(room -> room.getRoomId() == roomId).findAny().get();
-        }
-        return null;
+        Optional<RoomResponse> foundRoom = list.stream().filter(room -> room.getRoomId() == roomId).findAny();
+        return foundRoom.orElse(null);
     }
 
     @Override

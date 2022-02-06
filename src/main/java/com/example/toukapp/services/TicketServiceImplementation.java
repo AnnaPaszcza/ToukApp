@@ -1,19 +1,22 @@
 package com.example.toukapp.services;
 
+import com.example.toukapp.dtos.TicketResponse;
 import com.example.toukapp.dtos.TicketRequest;
 import com.example.toukapp.dtos.TicketResponse;
 import com.example.toukapp.entity.Ticket;
 import com.example.toukapp.repositories.TicketRepository;
 import com.example.toukapp.repositories.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class TicketServiceImplementation implements TicketService{
     private final TicketRepository ticketRepository;
-//    private final ReservationRepository reservationRepository;
 
     @Autowired
     public TicketServiceImplementation(TicketRepository ticketRepository) {
@@ -30,10 +33,13 @@ public class TicketServiceImplementation implements TicketService{
     @Override
     public TicketResponse getTicket(int ticketId){
         List<TicketResponse> list = getAll();
-        if(ticketRepository.existsById(ticketId)){
-            return list.stream().filter(ticket -> ticket.getTicketId() == ticketId).findAny().get();
+        if(ticketRepository.existsById(ticketId)) {
+            Optional<TicketResponse> foundTicket = list.stream().filter(ticket -> ticket.getTicketId() == ticketId).findAny();
+            return foundTicket.orElse(null);
         }
         return null;
+
+
     }
 
     @Override

@@ -9,7 +9,7 @@ public interface ReservationService {
     List<ReservationResponse> getAll();
     ReservationResponse getReservation(int reservationId);
     void addReservation(ReservationRequest reservationRequest);
-    void addTicket(int ticketId, int price);
     void deleteReservation(int reservationId);
     void updateReservation(int reservationId, ReservationRequest reservationRequest);
+    void addTicket(int ticketId, int price);
 }
