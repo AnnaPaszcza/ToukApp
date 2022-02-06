@@ -39,26 +39,29 @@ public class ReservationServiceImplementation implements ReservationService{
     public void addReservation(ReservationRequest reservationRequest){
         Reservation reservationEntity = new Reservation();
         int totalPrice = 0;
-        reservationEntity.setName(reservationRequest.getName());
-        reservationEntity.setSurname(reservationRequest.getSurname());
-        reservationEntity.setTotalPrice(totalPrice);
-        reservationEntity.setDate(reservationRequest.getDate());
-        reservationEntity.setExpirationDate(reservationRequest.getExpirationDate());
-        reservationEntity.setExpirationTime(reservationRequest.getExpirationTime());
-        reservationRepository.save(reservationEntity);
+        if (reservationRequest.getName().length() > 2 && reservationRequest.getSurname().length() > 2 &&
+            Character.isUpperCase(reservationRequest.getName().toCharArray()[0]) && Character.isUpperCase(reservationRequest.getSurname().toCharArray()[0])) {
+            reservationEntity.setName(reservationRequest.getName());
+            reservationEntity.setSurname(reservationRequest.getSurname());
+            reservationEntity.setTotalPrice(totalPrice);
+            reservationEntity.setDate(reservationRequest.getDate());
+            reservationEntity.setExpirationDate(reservationRequest.getExpirationDate());
+            reservationEntity.setExpirationTime(reservationRequest.getExpirationTime());
+            reservationRepository.save(reservationEntity);
+        }
     }
 
     @Override
     public void addTicket(int reservationId, int price) {
         ReservationResponse reservationResponse = this.getReservation(reservationId);
         ReservationRequest reservationRequest = new ReservationRequest();
-        reservationResponse.setReservationId(reservationId);
-        reservationResponse.setName(reservationResponse.getName());
-        reservationResponse.setSurname(reservationResponse.getSurname());
-        reservationResponse.setTotalPrice(reservationResponse.getTotalPrice() + price);
-        reservationResponse.setDate(reservationResponse.getDate());
-        reservationResponse.setExpirationTime(reservationResponse.getExpirationTime());
-        reservationResponse.setExpirationDate(reservationResponse.getExpirationDate());
+        reservationRequest.setReservationId(reservationId);
+        reservationRequest.setName(reservationResponse.getName());
+        reservationRequest.setSurname(reservationResponse.getSurname());
+        reservationRequest.setTotalPrice(reservationResponse.getTotalPrice() + price);
+        reservationRequest.setDate(reservationResponse.getDate());
+        reservationRequest.setExpirationTime(reservationResponse.getExpirationTime());
+        reservationRequest.setExpirationDate(reservationResponse.getExpirationDate());
         this.updateReservation(reservationId, reservationRequest);
     }
 

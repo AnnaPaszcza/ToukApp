@@ -38,15 +38,14 @@ public class TicketServiceImplementation implements TicketService{
 
     @Override
     public void addTicket(TicketRequest ticketRequest){
-//        ReservationRepository reservationRepository =
-        Ticket ticketEntity = new Ticket();
-        ticketEntity.setTicketType(ticketRequest.getType());
-        ticketEntity.setReservation(ticketRequest.getReservation());
-        ticketEntity.setScreening(ticketRequest.getScreening());
-        ticketEntity.setSeat(ticketRequest.getSeat());
-        //add ticket price to total price of reservation
-
-        ticketRepository.save(ticketEntity);
+        if (ticketRequest.getSeat() != null) {
+            Ticket ticketEntity = new Ticket();
+            ticketEntity.setTicketType(ticketRequest.getType());
+            ticketEntity.setReservation(ticketRequest.getReservation());
+            ticketEntity.setScreening(ticketRequest.getScreening());
+            ticketEntity.setSeat(ticketRequest.getSeat());
+            ticketRepository.save(ticketEntity);
+        }
     }
 
     @Override

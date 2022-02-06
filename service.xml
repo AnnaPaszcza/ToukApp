@@ -1,0 +1,7 @@
+<service>
+    <id>toukappservice-test</id>
+    <name>ToukApp Application</name>
+    <description>Service of ToukApp</description>
+    <executable>%BASE%\target\ToukApp-0.0.1-SNAPSHOT</executable>
+    <arguments>-jar</arguments>
+</service>

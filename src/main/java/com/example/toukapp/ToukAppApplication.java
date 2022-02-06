@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 
+import java.io.IOException;
 import java.sql.*;
 
 @SpringBootApplication
@@ -34,7 +35,12 @@ public class ToukAppApplication {
             System.out.println("Rows inserted");
 
         } catch (SQLException err) {
-            System.out.println("Error occured: " + err);
+            System.out.println("Error occurred: " + err);
         }
+//        try {
+//            System.in.read();
+//        } catch (IOException err) {
+//            System.out.println("Error occurred: " + err);
+//        }
     }
 }
