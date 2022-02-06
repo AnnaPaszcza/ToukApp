@@ -6,5 +6,5 @@ import lombok.Data;
 public class TicketTypeRequest {
     private int typeId;
     private String name;
-    private int price;
+    private Float price;
 }

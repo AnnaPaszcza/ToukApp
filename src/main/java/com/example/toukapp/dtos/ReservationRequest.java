@@ -11,7 +11,7 @@ public class ReservationRequest {
     private int reservationId;
     private String name;
     private String surname;
-    private int totalPrice;
+    private Float totalPrice;
     private Date date;
     private Date expirationDate;
     private Time expirationTime;

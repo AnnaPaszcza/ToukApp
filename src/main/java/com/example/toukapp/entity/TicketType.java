@@ -17,7 +17,7 @@ public class TicketType {
     private String name;
 
     @Column(name = "Price")
-    private int price;
+    private Float price;
 
     public int getTypeId() {
         return typeId;
@@ -31,11 +31,11 @@ public class TicketType {
         this.name = name;
     }
 
-    public int getPrice() {
+    public Float getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
 }

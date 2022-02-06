@@ -1,5 +1,6 @@
 package com.example.toukapp.controllers;
 
+import com.example.toukapp.dtos.MakeReservationRequest;
 import com.example.toukapp.dtos.ReservationRequest;
 import com.example.toukapp.dtos.ReservationResponse;
 import com.example.toukapp.services.ReservationService;
@@ -47,6 +48,12 @@ public class ReservationController {
     public ResponseEntity<HttpStatus> updateReservation(@PathVariable int id, @RequestBody ReservationRequest reservationRequest){
         reservationService.updateReservation(id, reservationRequest);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/api/makeReservation")
+    public ResponseEntity<Float> makeReservation(@RequestBody MakeReservationRequest makeReservationRequest) {
+        Float totalPrice = reservationService.makeReservation(makeReservationRequest);
+        return new ResponseEntity<>(totalPrice, HttpStatus.OK);
     }
 }
 

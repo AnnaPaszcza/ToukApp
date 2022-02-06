@@ -3,7 +3,6 @@ package com.example.toukapp.services;
 import com.example.toukapp.dtos.*;
 import com.example.toukapp.entity.Screening;
 import com.example.toukapp.repositories.ScreeningRepository;
-import com.example.toukapp.repositories.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Date;
@@ -11,9 +10,7 @@ import java.sql.Time;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -48,6 +45,16 @@ public class ScreeningServiceImplementation implements ScreeningService{
                     .map(screeningEntity -> new ScreeningRoomSeatResponse(screeningEntity.getScreeningId(), screeningEntity.getRoom(), availableSeats))
                     .findFirst();
             return screeningRoomSeatResponse.orElse(null);
+        }
+        return null;
+    }
+
+    @Override
+    public ScreeningResponse findById(int screeningId){
+        List<ScreeningResponse> list = getAll();
+        if(screeningRepository.existsById(screeningId)) {
+            Optional<ScreeningResponse> foundScreening = list.stream().filter(screening -> screening.getScreeningId() == screeningId).findFirst();
+            return foundScreening.orElse(null);
         }
         return null;
     }

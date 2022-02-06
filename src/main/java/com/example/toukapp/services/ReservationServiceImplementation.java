@@ -1,14 +1,13 @@
 package com.example.toukapp.services;
 
-import com.example.toukapp.dtos.ReservationRequest;
+import com.example.toukapp.dtos.*;
 import com.example.toukapp.dtos.ReservationResponse;
-import com.example.toukapp.dtos.ReservationResponse;
-import com.example.toukapp.entity.Reservation;
+import com.example.toukapp.entity.*;
 import com.example.toukapp.repositories.ReservationRepository;
-import com.example.toukapp.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,10 +16,18 @@ import java.util.stream.StreamSupport;
 @Service
 public class ReservationServiceImplementation implements ReservationService{
     private final ReservationRepository reservationRepository;
+    private final ScreeningService screeningService;
+    private final SeatService seatService;
+    private final TicketService ticketService;
+    private final TicketTypeService ticketTypeService;
 
     @Autowired
-    public ReservationServiceImplementation(ReservationRepository reservationRepository) {
+    public ReservationServiceImplementation(ReservationRepository reservationRepository, ScreeningService screeningService, SeatService seatService, TicketService ticketService, TicketTypeService ticketTypeService) {
         this.reservationRepository = reservationRepository;
+        this.screeningService = screeningService;
+        this.seatService = seatService;
+        this.ticketService = ticketService;
+        this.ticketTypeService = ticketTypeService;
     }
 
     @Override
@@ -43,7 +50,7 @@ public class ReservationServiceImplementation implements ReservationService{
     @Override
     public void addReservation(ReservationRequest reservationRequest){
         Reservation reservationEntity = new Reservation();
-        int totalPrice = 0;
+        Float totalPrice = (float) 0;
         if (reservationRequest.getName().length() > 2 && reservationRequest.getSurname().length() > 2 &&
             Character.isUpperCase(reservationRequest.getName().toCharArray()[0]) && Character.isUpperCase(reservationRequest.getSurname().toCharArray()[0])) {
             reservationEntity.setName(reservationRequest.getName());
@@ -56,8 +63,56 @@ public class ReservationServiceImplementation implements ReservationService{
         }
     }
 
+    public Float makeReservation(MakeReservationRequest makeReservationRequest) {
+        ScreeningResponse screeningResponse = screeningService.findById(makeReservationRequest.getScreeningId());
+        Screening screening = new Screening();
+        screening.setScreeningId(screeningResponse.getScreeningId());
+        screening.setMovie(screeningResponse.getMovie());
+        screening.setTime(screeningResponse.getTime());
+        screening.setRoom(screeningResponse.getRoom());
+        screening.setDate(screeningResponse.getDate());
+
+        Time expirationTime = Time.valueOf("23:59:59");
+        Reservation reservationEntity = new Reservation();
+        reservationEntity.setName(makeReservationRequest.getName());
+        reservationEntity.setSurname(makeReservationRequest.getSurname());
+        reservationEntity.setTotalPrice((float)0.0);
+        reservationEntity.setDate(screeningResponse.getDate());
+        reservationEntity.setExpirationTime(expirationTime);
+        reservationEntity.setExpirationDate(screeningResponse.getDate());
+        reservationEntity = reservationRepository.save(reservationEntity);
+        Reservation finalReservationEntity = reservationEntity;
+
+        makeReservationRequest.getChosenSeatIds().forEach(seat -> {
+            Ticket ticket = new Ticket();
+            TicketTypeResponse ticketTypeResponse = ticketTypeService.getTicketType(seat.getValue());
+            TicketType ticketType = new TicketType();
+            TicketRequest ticketRequest = new TicketRequest();
+            ticketType.setName(ticketTypeResponse.getName());
+            ticketType.setTypeId(ticketTypeResponse.getTypeId());
+            ticketType.setPrice(ticketTypeResponse.getPrice());
+            ticketRequest.setReservation(finalReservationEntity);
+            ticketRequest.setType(ticketType);
+            ticketRequest.setScreening(screening);
+            ticketService.addTicket(ticketRequest);
+
+            SeatResponse seatResponse = seatService.getSeat(seat.getKey());
+            Seat chosenSeat = new Seat();
+            chosenSeat.setSeatId(seatResponse.getSeatId());
+            chosenSeat.setRoom(seatResponse.getRoom());
+            chosenSeat.setNumber(seatResponse.getNumber());
+            chosenSeat.setRow(seatResponse.getRow());
+            chosenSeat.setIsTaken(true);
+            ticket.setSeat(chosenSeat);
+
+            addTicket(finalReservationEntity.getReservationId(), ticketType.getPrice());
+        });
+        reservationEntity = reservationRepository.save(reservationEntity);
+        return reservationEntity.getTotalPrice();
+    }
+
     @Override
-    public void addTicket(int reservationId, int price) {
+    public void addTicket(int reservationId, Float price) {
         ReservationResponse reservationResponse = this.getReservation(reservationId);
         ReservationRequest reservationRequest = new ReservationRequest();
         reservationRequest.setReservationId(reservationId);

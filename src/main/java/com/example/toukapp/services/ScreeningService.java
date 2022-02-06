@@ -12,7 +12,8 @@ public interface ScreeningService {
     List<ScreeningResponse> getAll();
     void addScreening(ScreeningRequest screeningRequest);
     void deleteScreening(int screeningId);
-    ScreeningRoomSeatResponse getScreening(int screeningId);
     void updateScreening(int screeningId, ScreeningRequest screeningRequest);
+    ScreeningResponse findById(int screeningId);
+    ScreeningRoomSeatResponse getScreening(int screeningId);
     List<ScreeningDateTimeResponse> getByDayTime(Date chosenDate, Time chosenTime);
 }

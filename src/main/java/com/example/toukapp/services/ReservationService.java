@@ -1,5 +1,6 @@
 package com.example.toukapp.services;
 
+import com.example.toukapp.dtos.MakeReservationRequest;
 import com.example.toukapp.dtos.ReservationRequest;
 import com.example.toukapp.dtos.ReservationResponse;
 
@@ -11,5 +12,6 @@ public interface ReservationService {
     void addReservation(ReservationRequest reservationRequest);
     void deleteReservation(int reservationId);
     void updateReservation(int reservationId, ReservationRequest reservationRequest);
-    void addTicket(int ticketId, int price);
+    void addTicket(int ticketId, Float price);
+    Float makeReservation(MakeReservationRequest makeReservationRequest);
 }

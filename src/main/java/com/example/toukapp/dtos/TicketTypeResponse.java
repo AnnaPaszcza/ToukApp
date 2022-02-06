@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class TicketTypeResponse {
     private int typeId;
     private String name;
-    private int price;
+    private Float price;
 }

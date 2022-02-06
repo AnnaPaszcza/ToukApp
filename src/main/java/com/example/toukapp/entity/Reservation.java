@@ -22,7 +22,7 @@ public class Reservation {
     private String surname;
 
     @Column(name = "TotalPrice")
-    private int totalPrice;
+    private Float totalPrice;
 
     @Column(name = "ReservationDate")
     private Date date;
@@ -37,11 +37,11 @@ public class Reservation {
         return reservationId;
     }
 
-    public int getTotalPrice() {
+    public Float getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(int totalPrice) {
+    public void setTotalPrice(Float totalPrice) {
         this.totalPrice = totalPrice;
     }
 
