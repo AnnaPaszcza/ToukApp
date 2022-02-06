@@ -20,7 +20,7 @@ public class Seat {
     private int number;
 
     @Column(name = "IsTaken")
-    private Boolean isTaken;
+    private boolean isTaken;
 
     @ManyToOne
     @JoinColumn(name = "RoomID")

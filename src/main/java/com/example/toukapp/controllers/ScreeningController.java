@@ -1,13 +1,17 @@
 package com.example.toukapp.controllers;
 
+import com.example.toukapp.dtos.ScreeningDateTimeResponse;
 import com.example.toukapp.dtos.ScreeningRequest;
 import com.example.toukapp.dtos.ScreeningResponse;
+import com.example.toukapp.dtos.ScreeningRoomSeatResponse;
 import com.example.toukapp.services.ScreeningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 @RestController
@@ -33,8 +37,8 @@ public class ScreeningController {
     }
 
     @GetMapping("/api/screening/{id}")
-    public ResponseEntity<?> getScreening(@PathVariable int id){
-        screeningService.getScreening(id);
+    public ResponseEntity<ScreeningRoomSeatResponse> getScreening(@PathVariable int id){
+//        screeningService.getScreening(id);
         return new ResponseEntity<>(screeningService.getScreening(id), HttpStatus.OK);
     }
 
@@ -48,5 +52,10 @@ public class ScreeningController {
     public ResponseEntity<HttpStatus> updateScreening(@PathVariable int id, @RequestBody ScreeningRequest screeningRequest){
         screeningService.updateScreening(id, screeningRequest);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/api/screening/{date}/{time}")
+    public ResponseEntity<List<ScreeningDateTimeResponse>> getByDayTime(@PathVariable Date date, @PathVariable Time time){
+        return new ResponseEntity<>(screeningService.getByDayTime(date, time), HttpStatus.OK);
     }
 }

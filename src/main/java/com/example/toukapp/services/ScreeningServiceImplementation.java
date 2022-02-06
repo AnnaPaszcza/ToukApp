@@ -1,29 +1,30 @@
 package com.example.toukapp.services;
 
-import com.example.toukapp.dtos.ScreeningRequest;
-import com.example.toukapp.dtos.ScreeningResponse;
-import com.example.toukapp.dtos.TicketTypeResponse;
-import com.example.toukapp.services.SeatService;
+import com.example.toukapp.dtos.*;
 import com.example.toukapp.entity.Screening;
 import com.example.toukapp.repositories.ScreeningRepository;
+import com.example.toukapp.repositories.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.sql.Date;
 import java.sql.Time;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
 public class ScreeningServiceImplementation implements ScreeningService{
     private final ScreeningRepository screeningRepository;
+    private final SeatService seatService;
 
     @Autowired
-    public ScreeningServiceImplementation(ScreeningRepository screeningRepository) {
+    public ScreeningServiceImplementation(ScreeningRepository screeningRepository, SeatService seatService) {
         this.screeningRepository = screeningRepository;
+        this.seatService = seatService;
     }
 
     @Override
@@ -34,11 +35,19 @@ public class ScreeningServiceImplementation implements ScreeningService{
     }
 
     @Override
-    public ScreeningResponse getScreening(int screeningId){
+    public ScreeningRoomSeatResponse getScreening(int screeningId){
         List<ScreeningResponse> list = getAll();
         if(screeningRepository.existsById(screeningId)) {
-            Optional<ScreeningResponse> foundScreening = list.stream().filter(screening -> screening.getScreeningId() == screeningId).findAny();
-            return foundScreening.orElse(null);
+            Optional<ScreeningResponse> foundScreening = list.stream().filter(screening -> screening.getScreeningId() == screeningId).findFirst();
+            List<SeatAvailableResponse> availableSeats = seatService.getAll().stream()
+                    .filter(seat -> seat.getRoom().getRoomId() == foundScreening.orElseThrow().getRoom().getRoomId())
+                    .filter(seat -> !seat.getIsTaken())
+                    .map(seat -> new SeatAvailableResponse(seat.getSeatId(), seat.getRow(), seat.getNumber()))
+                    .toList();
+            Optional<ScreeningRoomSeatResponse> screeningRoomSeatResponse = foundScreening.stream()
+                    .map(screeningEntity -> new ScreeningRoomSeatResponse(screeningEntity.getScreeningId(), screeningEntity.getRoom(), availableSeats))
+                    .findFirst();
+            return screeningRoomSeatResponse.orElse(null);
         }
         return null;
     }
@@ -72,15 +81,13 @@ public class ScreeningServiceImplementation implements ScreeningService{
         }
     }
 
-    public List<ScreeningResponse> getByDayTime(Date chosenDate, Time chosenTime){
-//        List<ScreeningResponse> screeningResponses =
+    public List<ScreeningDateTimeResponse> getByDayTime(Date chosenDate, Time chosenTime){
         return StreamSupport.stream(screeningRepository.findAll().spliterator(), false)
                 .filter(screeningEntity -> screeningEntity.getDate().equals(chosenDate))
                 .filter(screeningEntity -> (screeningEntity.getTime().equals(chosenTime)) || (screeningEntity.getTime().after(chosenTime)))
                 .sorted(Comparator.comparing(screeningEntity -> screeningEntity.getMovie().getTitle()))
                 .sorted(Comparator.comparing(Screening::getTime))
-                .map(screeningEntity -> new ScreeningResponse(screeningEntity.getScreeningId(), screeningEntity.getDate(), screeningEntity.getTime(), screeningEntity.getRoom(), screeningEntity.getMovie()))
+                .map(screeningEntity -> new ScreeningDateTimeResponse(screeningEntity.getScreeningId(), screeningEntity.getTime(), screeningEntity.getMovie().getTitle()))
                 .collect(Collectors.toList());
-//        return screeningResponses;
     }
 }
